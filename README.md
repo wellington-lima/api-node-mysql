@@ -1,4 +1,4 @@
-# API com JSONWEBTOKEN
+# API com NODEJS E MYSQL
 <p align="center">API NodeJS com MySql e Typescript</p>
 <hr>
 

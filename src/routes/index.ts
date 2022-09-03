@@ -7,72 +7,73 @@ route.get('/', (request, response) => {
   return response.json({ msg: 'App Index'})
 })
 
-route.get('/livros', (request, response) => {
+route.get('/livros', async(request, response) => {
   const sql = "SELECT * FROM livros";
 
-  con.query(sql, (err, livros) => {
-    if(err) {
-      throw new Error(`Erro ao consultar livros: ${err}`)  
-    }
+  try {
+    const livros = await con.query(sql);
+    return response.status(200).json(livros[0])
+  } catch (error) {
+    throw new Error(`Erro ao consultar livros: ${error}`)  
+  }
   
-    return response.status(200).json(livros)
-  })
 })
 
-route.get('/livros/:id', (request, response) => {
+route.get('/livros/:id', async(request, response) => {
   const id = parseInt(request.params.id)
   const sql = "SELECT * FROM livros WHERE `id` = ?";
 
-  con.query(sql, [id], (err, livros) => {
-    if(err) {
-      throw new Error(`Erro ao consultar livros: ${err}`)  
-    }
-  
-    return response.status(200).json(livros)
-  })
+  try {
+    const livro = await con.query(sql, [id]);
+    return response.status(200).json(livro[0]);
+
+  } catch (error) {
+    throw new Error(`Erro ao consultar livros: ${error}`);
+  }
 })
 
-route.post('/livros/', (request, response) => {
+route.post('/livros/', async(request, response) => {
   const { titulo, paginas } = request.body
 
   const sql = "INSERT INTO livros (titulo, paginas) VALUES (?,?)";
 
-  con.query(sql, [titulo, paginas], (err, livros) => {
-    if(err) {
-      throw new Error(`Erro ao cadastrar livro: ${err}`)  
-    }
-  
+  try {
+    await con.query(sql, [titulo, paginas]);
     return response.status(200).json({ msg: 'Livro cadastrado com sucesso' })
-  })
+    
+  } catch (error) {
+    throw new Error(`Erro ao cadastrar livro: ${error}`)  
+  }
 })
 
-route.put('/livros/:id', (request, response) => {
+route.put('/livros/:id', async(request, response) => {
   const id = parseInt(request.params.id)
   const { titulo, paginas } = request.body
 
   const sql = "UPDATE livros SET `titulo`=?, `paginas`=? WHERE `id`=?";
   
-  con.query(sql, [titulo, paginas, id], (err, livros) => {
-    if(err) {
-      throw new Error(`Erro ao editar livro: ${err}`)  
-    }
-  
+  try {
+    await con.query(sql, [titulo, paginas, id]);
     return response.status(200).json({ msg: 'Livro editado com sucesso' })
-  })
+    
+  } catch (error) {
+    throw new Error(`Erro ao editar livro: ${error}`);
+  }
 })
 
-route.delete('/livros/:id', (request, response) => {
+route.delete('/livros/:id', async(request, response) => {
   const id = parseInt(request.params.id)
 
   const sql = "DELETE FROM livros WHERE `id`=?";
   
-  con.query(sql, [id], (err, livros) => {
-    if(err) {
-      throw new Error(`Erro ao excluir livro: ${err}`)  
-    }
-  
-    return response.status(200).json({ msg: 'Livro ecluido com sucesso' })
-  })
+  try {
+    await con.query(sql, [id]);
+    return response.status(200).json({ msg: 'Livro ecluido com sucesso' });
+    
+  } catch (error) {
+    throw new Error(`Erro ao excluir livro: ${error}`);
+    
+  }
 })
 
 export default route
